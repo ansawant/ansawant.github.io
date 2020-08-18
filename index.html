@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
-<!--<img src="https://ansawant.github.io/assets/RGB_1.png" alt="NULL" width="1" height="1">-->
+    <div id="scatter_chart"></div>
+    <script type="text/javascript">
+        let jsonSpec1="o3o2_ewha.json";
+        vegaEmbed('#scatter_chart', jsonSpec1,{"renderer":"svg"}).then(function(result) {
+        }).catch(console.error);
+    </script>
 </body>
 </html>
