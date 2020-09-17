@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+</head>
+<body style="overflow: visible">
+    <div style="width: 100%; overflow: visible;">
+        <div id="scatter_chart" style="width: 700px; float: left;"></div>
+        <div style="margin-left: 720px;">
+            <img src="" id="ratio_map" >
+        </div>
+    </div>
+    <script type="text/javascript">
+        let jsonSpec1="o3o2_ewha.json";
+        vegaEmbed('#scatter_chart', jsonSpec1,{"renderer":"svg",
+            patch: (jsonSpec1) => {
+                jsonSpec1.signals.push({
+                    "name": "objectClick",
+                    "on": [{"events": "symbol:click", "update": "datum"}]
+                });
+                return jsonSpec1;
+            }
+        }).then(result => {
+            result.view.addSignalListener('objectClick',  (name,value) => {
+                callObjectSearch(value)
+            });
+            result.view.addSignalListener('Ratio_Map',  (name,value) => {
+                callBandSearch(value)
+            });
+        }).catch(console.error);
+
+        function callObjectSearch(value){
+            var dict = Object.entries(value);
+            var object_name = dict[0][1];
+            console.log("Selected object is ", object_name);
+            var img_url = document.getElementById("ratio_map").src;
+            // console.log(img_url);
+            var root_dir = "";
+            var band_dir = "o3o2";
+            if(img_url.substring(img_url.length-3, img_url.length) != "png"){
+                root_dir = "https://ansawant.github.io/assets/";
+            } else {
+                root_dir = img_url.substring(0, 34);
+                band_dir = img_url.substring(34, 38);
+            }
+            object_name = object_name.replace(' ', '%20');
+            // console.log(object_name);
+            img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
+            // console.log(img_url);
+            document.getElementById("ratio_map").src=img_url;
+
+        }
+
+        function callBandSearch(value){
+            var dict = Object.entries(value);
+            var band_name = dict[0][1][0];
+            console.log("Selected band is ", band_name);
+            var bandKeys = {
+                'O-II/O-III':'o2o3',
+                'H-alpha/O-III':'hao3',
+                'H-alpha/O-II':'hao2',
+                'S-II/O-III':'s2o3',
+                'EW(H-alpha)':'ewha'
+                }
+            var band_dir = bandKeys[band_name];
+            var img_url = document.getElementById("ratio_map").src;
+            var root_dir = "";
+            var object_name = "IC 132";
+            if(img_url.substring(img_url.length-3, img_url.length) != "png"){
+                root_dir = "https://ansawant.github.io/assets/";
+            } else {
+                root_dir = img_url.substring(0, 34);
+                object_name = img_url.substring(39, img_url.length-9);
+            }
+            object_name = object_name.replace(' ', '%20');
+            // console.log(band_dir);
+            img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
+            // console.log(img_url);
+            document.getElementById("ratio_map").src=img_url;
+
+        }
+
+    </script>
+</body>
+</html>
