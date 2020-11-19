@@ -37,13 +37,11 @@
             console.log("Selected object is ", object_name);
             var img_url = document.getElementById("ratio_map").src;
             // console.log(img_url);
-            var root_dir = "";
+            var root_dir = document.location.origin + "/assets/";
             var band_dir = "o2o3";
-            if(img_url.substring(img_url.length-3, img_url.length) != "png"){
-                root_dir = "https://ansawant.github.io/assets/";
-            } else {
-                root_dir = img_url.substring(0, 34);
-                band_dir = img_url.substring(34, 38);
+            if(img_url.substring(img_url.length-3, img_url.length) == "png"){
+                var relative_url = img_url.replace(root_dir, "");
+                band_dir = relative_url.substring(0, 4);
             }
             object_name = object_name.replace(' ', '%20');
             // console.log(object_name);
@@ -66,13 +64,11 @@
                 }
             var band_dir = bandKeys[band_name];
             var img_url = document.getElementById("ratio_map").src;
-            var root_dir = "";
+            var root_dir = document.location.origin + "/assets/";
             var object_name = "IC 132";
-            if(img_url.substring(img_url.length-3, img_url.length) != "png"){
-                root_dir = "https://ansawant.github.io/assets/";
-            } else {
-                root_dir = img_url.substring(0, 34);
-                object_name = img_url.substring(39, img_url.length-9);
+            if(img_url.substring(img_url.length-3, img_url.length) == "png"){
+                var relative_url = img_url.replace(root_dir, "");
+                object_name = relative_url.substring(5, relative_url.length-9);
             }
             object_name = object_name.replace(' ', '%20');
             // console.log(band_dir);
