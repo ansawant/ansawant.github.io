@@ -37,7 +37,7 @@
             console.log("Selected object is ", object_name);
             var img_url = document.getElementById("ratio_map").src;
             // console.log(img_url);
-            var root_dir = document.location.origin + "/assets/";
+            var root_dir = document.location.origin + "/assets/color/";
             var band_dir = "o3o2";
             if(img_url.substring(img_url.length-3, img_url.length) == "png"){
                 var relative_url = img_url.replace(root_dir, "");
@@ -64,7 +64,7 @@
                 }
             var band_dir = bandKeys[band_name];
             var img_url = document.getElementById("ratio_map").src;
-            var root_dir = document.location.origin + "/assets/";
+            var root_dir = document.location.origin + "/assets/color/";
             var object_name = "IC 132";
             if(img_url.substring(img_url.length-3, img_url.length) == "png"){
                 var relative_url = img_url.replace(root_dir, "");
