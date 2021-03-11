@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+</head>
+<body style="overflow: visible">
+    <div style="width: 100%; overflow: visible;">
+        <div id="scatter_chart" style="width: 700px; float: left;"></div>
+        <div style="margin-left: 720px;">
+            <img src="" id="ratio_map" >
+        </div>
+    </div>
+    <script type="text/javascript">
+        let jsonSpec1="o3o2_ha.json";
+        vegaEmbed('#scatter_chart', jsonSpec1,{"renderer":"svg",
+            patch: (jsonSpec1) => {
+                jsonSpec1.signals.push({
+                    "name": "objectClick",
+                    "on": [{"events": "symbol:click", "update": "datum"}]
+                });
+                return jsonSpec1;
+            }
+        }).then(result => {
+            result.view.addSignalListener('objectClick',  (name,value) => {
+                callObjectSearch(value)
+            });
+            result.view.addSignalListener('Ratio_Map',  (name,value) => {
+                callBandSearch(value)
+            });
+        }).catch(console.error);
+
+        function callObjectSearch(value){
+            var dict = Object.entries(value);
+            var object_name = dict[0][1];
+            console.log("Selected object is ", object_name);
+            var img_url = document.getElementById("ratio_map").src;
+            console.log(img_url);
+            console.log(document.location.origin);
+            var root_dir = document.location.origin + "/assets/bw/linear";
+            var band_dir = "halp";
+            if(img_url.substring(img_url.length-3, img_url.length) == "png"){
+                var relative_url = img_url.replace(root_dir, "");
+                band_dir = relative_url.substring(0, 4);
+            }
+            object_name = object_name.replace(' ', '%20');
+            // console.log(object_name);
+            img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
+            console.log(img_url);
+            document.getElementById("ratio_map").src=img_url;
+
+        }
+
+        function callBandSearch(value){
+            var dict = Object.entries(value);
+            var band_name = dict[0][1][0];
+            console.log("Selected band is ", band_name);
+            var bandKeys = {
+                '[OIII]/[OII]':'o3o2',
+                '[OIII]/[SII]':'o3s2',
+                '[OII]/[OIII]':'o2o3',
+                '[SII]/[OIII]':'s2o3',
+                'H-alpha':'halp'
+                }
+            var band_dir = bandKeys[band_name];
+            var img_url = document.getElementById("ratio_map").src;
+            var root_dir = document.location.origin + "/assets/bw/linear";
+            var object_name = "IC 132";
+            if(img_url.substring(img_url.length-3, img_url.length) == "png"){
+                var relative_url = img_url.replace(root_dir, "");
+                object_name = relative_url.substring(5, relative_url.length-9);
+            }
+            object_name = object_name.replace(' ', '%20');
+            // console.log(band_dir);
+            img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
+            console.log(img_url);
+            document.getElementById("ratio_map").src=img_url;
+
+        }
+
+    </script>
+</body>
+</html>
