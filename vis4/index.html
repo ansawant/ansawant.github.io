@@ -7,8 +7,8 @@
 </head>
 <body style="overflow: visible">
     <div style="width: 100%; overflow: visible;">
-        <div id="scatter_chart" style="width: 700px; float: left;"></div>
-        <div style="margin-left: 720px;">
+        <div id="scatter_chart" style="width: 750px; float: left;"></div>
+        <div style="margin-left: 770px;">
             <img src="" id="ratio_map" >
         </div>
     </div>
@@ -29,7 +29,7 @@
             result.view.addSignalListener('Ratio_Map',  (name,value) => {
                 callBandSearch(value)
             });
-            result.view.addSignalListener('ObjectDropSelector',  (name,value) => {
+            result.view.addSignalListener('Selected',  (name,value) => {
                 callObjectDropdown(value)
             });
         }).catch(console.error);
@@ -38,9 +38,10 @@
             var dict = Object.entries(value);
             var object_name = dict[0][1];
             console.log("Selected object is ", object_name);
+            document.getElementsByName("Selected_Object")[0].value = object_name;
             var img_url = document.getElementById("ratio_map").src;
-            console.log(img_url);
-            console.log(document.location.origin);
+            // console.log(img_url);
+            // console.log(document.location.origin);
             var root_dir = document.location.origin + "/assets/black/";
             var band_dir = "halp";
             if(img_url.substring(img_url.length-3, img_url.length) == "png"){
@@ -50,8 +51,9 @@
             object_name = object_name.replace(' ', '%20');
             // console.log(object_name);
             img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
-            console.log(img_url);
+            // console.log(img_url);
             document.getElementById("ratio_map").src=img_url;
+            document.getElementsByName("Ratio_Map_band")[4].checked = true;
 
         }
 
@@ -60,8 +62,8 @@
             var object_name = dict[0][1][0];
             console.log("Selected object is ", object_name);
             var img_url = document.getElementById("ratio_map").src;
-            console.log(img_url);
-            console.log(document.location.origin);
+            // console.log(img_url);
+            // console.log(document.location.origin);
             var root_dir = document.location.origin + "/assets/black/";
             var band_dir = "halp";
             if(img_url.substring(img_url.length-3, img_url.length) == "png"){
@@ -71,8 +73,9 @@
             object_name = object_name.replace(' ', '%20');
             // console.log(object_name);
             img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
-            console.log(img_url);
+            // console.log(img_url);
             document.getElementById("ratio_map").src=img_url;
+            document.getElementsByName("Ratio_Map_band")[4].checked = true;
 
         }
 
@@ -93,8 +96,10 @@
             var object_name = "IC 132";
             if(img_url.substring(img_url.length-3, img_url.length) == "png"){
                 var relative_url = img_url.replace(root_dir, "");
-                object_name = relative_url.substring(10, relative_url.length-9);
+                object_name = relative_url.substring(11, relative_url.length-9);
             }
+            object_name = object_name.replace('%20', ' ');
+            document.getElementsByName("Selected_Object")[0].value = object_name;
             object_name = object_name.replace(' ', '%20');
             if(band_name.slice(-1) == 'r'){
                 var root_dir = root_dir + "color/";
@@ -102,7 +107,7 @@
             else var root_dir = root_dir + "black/";
             // console.log(band_dir);
             img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
-            console.log(img_url);
+            // console.log(img_url);
             document.getElementById("ratio_map").src=img_url;
 
         }
