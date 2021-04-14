@@ -88,9 +88,10 @@
                 '[OIII]/[SII]':'o3s2',
                 '[OIII]/[OII] Color':'o3o2',
                 '[OIII]/[SII] Color':'o3s2',
-                'Hα':'halp'
+                'H\u03B1':'halp'
                 }
             var band_dir = bandKeys[band_name];
+            console.log(band_dir)
             var img_url = document.getElementById("ratio_map").src;
             var root_dir = document.location.origin + "/assets/";
             var object_name = "IC 132";
