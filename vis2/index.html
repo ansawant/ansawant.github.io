@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@4"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+</head>
+<body style="overflow: visible">
+    <div style="width: 650px; height:490px; overflow: visible;">
+        <div id="scatter_chart" style="width: 650px; float: left;"></div>
+    </div>
+    <div>
+        Sawant et al. 2021, ApJ submitted
+    </div>
+    <div style="width: 650px; height:500px; overflow: visible;">
+        <img src="" id="ratio_map" >
+    </div>
+    <script type="text/javascript">
+        let jsonSpec1="ha_metal.json";
+        vegaEmbed('#scatter_chart', jsonSpec1,{"renderer":"svg",
+            patch: (jsonSpec1) => {
+                jsonSpec1.signals.push({
+                    "name": "objectClick",
+                    "on": [{"events": "symbol:click", "update": "datum"}]
+                });
+                return jsonSpec1;
+            }
+        }).then(result => {
+            result.view.addSignalListener('objectClick',  (name,value) => {
+                callObjectSearch(value)
+            });
+            result.view.addSignalListener('Ratio_Map',  (name,value) => {
+                callBandSearch(value)
+            });
+            result.view.addSignalListener('Selected',  (name,value) => {
+                callObjectDropdown(value)
+            });
+        }).catch(console.error);
+
+        function callObjectSearch(value){
+            var dict = Object.entries(value);
+            var object_name = dict[0][1];
+            console.log("Selected object is ", object_name);
+            document.getElementsByName("Selected_Object")[0].value = object_name;
+            var img_url = document.getElementById("ratio_map").src;
+            // console.log(img_url);
+            // console.log(document.location.origin);
+            var root_dir = document.location.origin + "/assets/";
+            var band_dir = "halpb";
+            if(img_url.substring(img_url.length-3, img_url.length) == "png"){
+                var relative_url = img_url.replace(root_dir, "");
+                band_dir = relative_url.substring(0, 5);
+            }
+            object_name = object_name.replace(' ', '%20');
+            // console.log(object_name);
+            img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
+            // console.log(img_url);
+            document.getElementById("ratio_map").src=img_url;
+            // document.getElementsByName("Ratio_Map_band")[4].checked = true;
+
+        }
+
+        function callObjectDropdown(value){
+            var dict = Object.entries(value);
+            var object_name = dict[0][1][0];
+            console.log("Selected object is ", object_name);
+            var img_url = document.getElementById("ratio_map").src;
+            // console.log(img_url);
+            // console.log(document.location.origin);
+            var root_dir = document.location.origin + "/assets/";
+            var band_dir = "halpb";
+            if(img_url.substring(img_url.length-3, img_url.length) == "png"){
+                var relative_url = img_url.replace(root_dir, "");
+                band_dir = relative_url.substring(0, 5);
+            }
+            object_name = object_name.replace(' ', '%20');
+            // console.log(object_name);
+            img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
+            // console.log(img_url);
+            document.getElementById("ratio_map").src=img_url;
+            // document.getElementsByName("Ratio_Map_band")[4].checked = true;
+
+        }
+
+        function callBandSearch(value){
+            var dict = Object.entries(value);
+            var band_name = dict[0][1][0];
+            console.log("Selected band is ", band_name);
+            var bandKeys = {
+                '[OIII]/[OII]':'o3o2b',
+                '[OIII]/[SII]':'o3s2b',
+                '[OIII]/[OII] Color':'o3o2c',
+                '[OIII]/[SII] Color':'o3s2c',
+                'H\u03B1':'halpb'
+                }
+            var band_dir = bandKeys[band_name];
+            var img_url = document.getElementById("ratio_map").src;
+            var root_dir = document.location.origin + "/assets/";
+            var object_name = "IC 132";
+            if(img_url.substring(img_url.length-3, img_url.length) == "png"){
+                var relative_url = img_url.replace(root_dir, "");
+                object_name = relative_url.substring(6, relative_url.length-10);
+            }
+            object_name = object_name.replace('%20', ' ');
+            document.getElementsByName("Selected_Object")[0].value = object_name;
+            object_name = object_name.replace(' ', '%20');
+            img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
+            // console.log(img_url);
+            document.getElementById("ratio_map").src=img_url;
+
+        }
+
+    </script>
+</body>
+</html>
