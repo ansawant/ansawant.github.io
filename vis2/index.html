@@ -7,13 +7,18 @@
 </head>
 <body style="overflow: visible">
     <div style="width: 650px; height:500px; overflow: visible;">
-        <div id="scatter_chart" style="width: 650px; float: left;"></div>
-    </div>
-    <div>
-        Sawant et al. 2021, ApJ submitted
-    </div>
+       <div id="scatter_chart" style="width: 650px; float: left;"></div>
+   </div>
+   <div style="width: 650px; float: left;">
+       <strong>Usage:</strong>
+       Sliders filter the objects on the graph above.
+       Selecting an optical depth category in the legend displays only objects in the selected category.
+       Hover with a mouse pointer on the symbols to view information about each object.
+       Display a ratio map using the dropdown menu or by selecting an object on the graph.
+       Radio buttons change the ratio map shown below.
+   </div>
     <div style="width: 650px; height:500px; overflow: visible;">
-        <img src="" id="ratio_map" >
+        <img src="../assets/halpb/IC%20132_halpb.png" id="ratio_map" >
     </div>
     <script type="text/javascript">
         let jsonSpec1="ha_metal.json";
@@ -43,8 +48,6 @@
             console.log("Selected object is ", object_name);
             document.getElementsByName("Selected_Object")[0].value = object_name;
             var img_url = document.getElementById("ratio_map").src;
-            // console.log(img_url);
-            // console.log(document.location.origin);
             var root_dir = document.location.origin + "/assets/";
             var band_dir = "halpb";
             if(img_url.substring(img_url.length-3, img_url.length) == "png"){
@@ -52,11 +55,8 @@
                 band_dir = relative_url.substring(0, 5);
             }
             object_name = object_name.replace(' ', '%20');
-            // console.log(object_name);
             img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
-            // console.log(img_url);
             document.getElementById("ratio_map").src=img_url;
-            // document.getElementsByName("Ratio_Map_band")[4].checked = true;
 
         }
 
@@ -65,8 +65,6 @@
             var object_name = dict[0][1][0];
             console.log("Selected object is ", object_name);
             var img_url = document.getElementById("ratio_map").src;
-            // console.log(img_url);
-            // console.log(document.location.origin);
             var root_dir = document.location.origin + "/assets/";
             var band_dir = "halpb";
             if(img_url.substring(img_url.length-3, img_url.length) == "png"){
@@ -74,11 +72,8 @@
                 band_dir = relative_url.substring(0, 5);
             }
             object_name = object_name.replace(' ', '%20');
-            // console.log(object_name);
             img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
-            // console.log(img_url);
             document.getElementById("ratio_map").src=img_url;
-            // document.getElementsByName("Ratio_Map_band")[4].checked = true;
 
         }
 
@@ -105,7 +100,6 @@
             document.getElementsByName("Selected_Object")[0].value = object_name;
             object_name = object_name.replace(' ', '%20');
             img_url = root_dir + band_dir + "/" + object_name + "_" + band_dir + ".png";
-            // console.log(img_url);
             document.getElementById("ratio_map").src=img_url;
 
         }
