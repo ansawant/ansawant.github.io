@@ -178,7 +178,6 @@
         svg.selectAll("#caption_text")
           .attr("opacity", 0)
           .transition().duration(duration)
-          .on("end", () => console.log(counter))
       // tempAlert('Steady cases.\n R_t equal to 1', 4000);
       // sleep(4000);
     }
@@ -195,7 +194,6 @@
       svg.selectAll("#caption_text")
         .attr("opacity", 0)
         .transition().duration(duration)
-        .on("end", () => console.log(counter))
       // tempAlert('Cases and deaths rising.\n R_t greater than 1.4', 4000);
       // sleep(4000);
     }
@@ -212,7 +210,6 @@
       svg.selectAll("#caption_text")
         .attr("opacity", 0)
         .transition().duration(duration)
-        .on("end", () => console.log(counter))
       // tempAlert('Lockdown announced in Bangladesh.', 4000);
       // sleep(4000);
       svg.append('text')
@@ -257,7 +254,6 @@
       svg.selectAll("#caption_text")
         .attr("opacity", 0)
         .transition().duration(duration)
-        .on("end", () => console.log(counter))
       // tempAlert('Strict Lockdown in Bangladesh.', 4000);
       // sleep(4000);
       // xAxis.ticks(d3.timeWeek, 2).tickFormat(d3.timeFormat('%d %b %Y'));
@@ -395,7 +391,6 @@
   }
 
   setInterval(function(){
-     //console.log('hello');
     updateChart();
   }, duration);
 })
