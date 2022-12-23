@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <!-- Load d3.js -->
+  <script src="https://d3js.org/d3.v4.js"></script>
+  <style>
+    .line {
+      fill: none;
+      stroke-width: 2px;
+    }
+    .center-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div id='canvas' class="center-screen"></div>
+</body>
+
+</script>
+<script>
+  var margin = {top: 50, right: 50, bottom: 50, left: 60},
+      WIDTH = 1000 - margin.left - margin.right,
+      HEIGHT = 600 - margin.top - margin.bottom;
+
+  var colorArray = [d3.schemeCategory10][0];
+
+  var counter = 2;
+  var duration = 100;
+  var currentData = [];
+  var newData = [];
+
+  var x = d3.scaleTime().range([0, 0.85*WIDTH]);
+  var y = d3.scaleLinear().range([HEIGHT, 0]);
+
+  var svg = d3.select("#canvas").append("svg")
+      .attr("width", WIDTH + margin.left + margin.right)
+      .attr("height", HEIGHT + margin.top + margin.bottom + 50)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  svg.append('defs').append('clipPath')
+    				    .attr('id', 'clip2')
+    				.append('rect')
+    					// .attr('x', 0)
+    					// .attr('y', 0)
+    					.attr('width', WIDTH)
+    					.attr('height', HEIGHT);
+
+  const xAxis = 	d3.axisBottom(x);
+
+  const axisCall = svg.append('g')
+                    .style('font-family', 'Helvetica')
+                    .attr('transform', `translate(0, ${HEIGHT})`);
+
+  const yAxis = 	d3.axisLeft(y);
+
+  const axisCallY = svg.append('g')
+                      .style('font-family', 'Helvetica');
+
+  xAxis.ticks(5, '%d %b %Y');
+
+  d3.csv("subcontinent-covid-data.csv",
+
+    // When reading the csv, I must format variables:
+    function(d){
+      return { date : d3.timeParse("%Y-%m-%d")(d.date),
+              iso_code : d.iso_code,
+              location : d.location,
+              new_deaths_smoothed_per_million : d.new_deaths_smoothed_per_million,
+              new_cases_smoothed_per_million : d.new_cases_smoothed_per_million }
+    },
+
+
+
+
+    // Now I can use this dataset:
+    function(data) {
+
+      // group the data: I want to draw one line per group
+      var country = d3.nest() // nest function allows to group the calculation per level of a factor
+        .key(function(d) { return d.iso_code;})
+        .entries(data);
+
+    country = country.slice(0, 2)
+
+
+
+
+  var valueline = d3.line()
+    // .curve(d3.curveBasis)
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.new_deaths_smoothed_per_million); });
+
+  // x.domain(d3.extent(country.map(d => d.values).flat(), v => v.date));
+  // y.domain([0, d3.max(country.map(d => d.values).flat(), v => v.new_deaths_smoothed_per_million)]);
+
+  axisCall.call(xAxis);
+  axisCallY.call(yAxis);
+
+  var area = d3.area()
+                      // .interpolate("cardinal")
+                      .x0( function(d) { return x(d.x0) } )
+                      .y0( function(d) { return y(d.y0) } )
+                      .y1( function(d) { return y(d.y1) } );
+
+
+  for (i = 0; i < country.length; i++) {
+    yData = country[i].values.slice(0,counter);
+    color = colorArray[i]
+
+    svg.append("path")
+        .data([yData])
+        .attr('id', country[i].key)
+        .attr("class", "line")
+        .attr("d", valueline)
+        .attr('stroke', color);
+
+
+    svg.append("rect")
+        .attr("x", 0.87*WIDTH)
+        .attr("y",  100 + (i-0.25)*25) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("fill", color);
+
+
+    svg.append("text")
+        .attr("x", 0.9*WIDTH)
+        .attr("y", 100 + i*25) // 100 is where the first dot appears. 25 is the distance between dots
+        // .style("fill", color)
+        .text(country[i].values[0]['location'])
+        .style("font-family", "Arial")
+        .style("fill", 'dimgrey')
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle");
+  }
+
+  svg.append("text")
+      .attr("x", -0.05*WIDTH)
+      .attr("y", 0 - (margin.top / 2))
+      .attr("text-anchor", "left")
+      .style("font-size", "20px")
+      .style("font-family", "Arial")
+      .style("fill", "dimgrey")
+      .text("Daily new confirmed COVID-19 deaths per million people");
+
+  svg.append("text")
+    .attr("id", 'caption_text')
+    .attr("x", 250)
+    .attr("y", 200)
+    .attr("opacity", 0)
+    .style("font-size", "16px")
+    .style("font-family", "Arial")
+    .style("fill", "dimgrey")
+
+
+  function updateChart() {
+    if(counter >= 62) {
+      return;
+    }
+    if(counter == 4) {
+      svg.selectAll("#caption_text")
+        .attr("x", 200)
+        .attr("y", 180)
+        .attr("opacity", 1)
+        .text("Steady cases in early March")
+        .transition().duration(duration)
+    }
+    if(counter == 6) {
+        sleep(4000);
+        svg.selectAll("#caption_text")
+          .attr("opacity", 0)
+          .transition().duration(duration)
+          .on("end", () => console.log(counter))
+      // tempAlert('Steady cases.\n R_t equal to 1', 4000);
+      // sleep(4000);
+    }
+    if(counter == 23) {
+      svg.selectAll("#caption_text")
+        .attr("x", 250)
+        .attr("y", 200)
+        .attr("opacity", 1)
+        .text("Cases and Deaths rising")
+        .transition().duration(duration)
+    }
+    if(counter == 25) {
+      sleep(4000);
+      svg.selectAll("#caption_text")
+        .attr("opacity", 0)
+        .transition().duration(duration)
+        .on("end", () => console.log(counter))
+      // tempAlert('Cases and deaths rising.\n R_t greater than 1.4', 4000);
+      // sleep(4000);
+    }
+    if(counter == 33) {
+      svg.selectAll("#caption_text")
+        .attr("x", 250)
+        .attr("y", 200)
+        .attr("opacity", 1)
+        .text('Lockdown starts in Bangladesh')
+        .transition().duration(0.5*duration)
+    }
+    if(counter == 35) {
+      sleep(4000);
+      svg.selectAll("#caption_text")
+        .attr("opacity", 0)
+        .transition().duration(duration)
+        .on("end", () => console.log(counter))
+      // tempAlert('Lockdown announced in Bangladesh.', 4000);
+      // sleep(4000);
+      svg.append('text')
+        .attr('id', 'lockdown_text')
+        .attr("x", x(country[0].values[counter]['date']))
+        .attr("y", y(1.5*country[0].values[counter]['new_deaths_smoothed_per_million']))
+        .attr('dx', '-180')
+        .attr("text-anchor", 'right')
+        .style('fill', 'grey')
+        .style('font-size', '16px')
+        .style("font-family", "Arial")
+        .text('Lockdown in Bangladesh');
+
+      svg.append("line")
+        .attr("id", "lockdown_date")
+        .attr("x1", x(country[0].values[counter]['date']))
+        .attr("y1", HEIGHT)
+        .attr("x2", x(country[0].values[counter]['date']))
+        .attr("y2", 0)
+        .attr( "stroke", "grey" )
+        .attr( "stroke-width", "1" );
+
+        // svg.append("rect")
+        //   .attr("id", "lockdown_rect")
+        //   .attr("x", x(country[0].values[counter]['date']))
+        //   .attr("y", 0)
+        //   .attr("width", x(country[0].values[counter+1]['date']) - x(country[0].values[counter]['date']))
+        //   .attr("height", HEIGHT)
+        //   .attr( "fill", "#aaaaaa" )
+        //   .attr( "fill-opacity", "50%" );
+    }
+    if(counter == 45) {
+      svg.selectAll("#caption_text")
+        .attr("x", 250)
+        .attr("y", 200)
+        .attr("opacity", 1)
+        .text('Strict lockdown in Bangladesh')
+        .transition().duration(duration)
+    }
+    if(counter == 47) {
+      sleep(4000);
+      svg.selectAll("#caption_text")
+        .attr("opacity", 0)
+        .transition().duration(duration)
+        .on("end", () => console.log(counter))
+      // tempAlert('Strict Lockdown in Bangladesh.', 4000);
+      // sleep(4000);
+      // xAxis.ticks(d3.timeWeek, 2).tickFormat(d3.timeFormat('%d %b %Y'));
+    }
+    if(counter == 61) {
+      var x0 = country[0].values.slice(35,61).map(c => c.date);
+      var y0 = country[0].values.slice(35,61).map(c => c.new_deaths_smoothed_per_million);
+      var y1 = country[1].values.slice(35,61).map(c => c.new_deaths_smoothed_per_million);
+
+      var area_data = [];
+
+      for (j=0; j < x0.length; j++) {
+        area_data.push({'x0': x0[j], 'y0': y0[j], 'y1': y1[j]});
+      }
+
+      svg.append("path")
+        .attr("id", "diff_deaths")
+        .datum(area_data)
+        .attr("fill", colorArray[0])
+        .attr("d", area)
+        .attr("fill-opacity", 0)
+
+      svg.append("text")
+        .attr("id", "diff_deaths_text")
+        .attr("x", x(country[0].values[61]['date']))
+        .attr("y", y(2*country[0].values[61]['new_deaths_smoothed_per_million']))
+        .attr('dx', '-75')
+        .attr("text-anchor", 'middle')
+        .attr("opacity", 0)
+        .style('fill', colorArray[0])
+        .style('font-size', '16px')
+        .style("font-family", "Arial")
+        .text('~3,400 deaths')
+
+      svg.append("text")
+        .attr("id", "diff_deaths_text")
+        .attr("x", x(country[0].values[61]['date']))
+        .attr("y", y(2*country[0].values[61]['new_deaths_smoothed_per_million']))
+        .attr('dx', '-75')
+        .attr('dy', '18')
+        .attr("text-anchor", 'middle')
+        .attr("opacity", 0)
+        .style('fill', colorArray[0])
+        .style('font-size', '16px')
+        .style("font-family", "Arial")
+        .text('prevented?')
+
+      sleep(1000);
+
+
+      svg.selectAll("#diff_deaths")
+        .transition().duration(10*duration)
+        .ease(d3.easeLinear, 2).attr("fill-opacity", 0.4);
+
+      svg.selectAll("#diff_deaths_text")
+        .transition().duration(10*duration)
+        .ease(d3.easeLinear, 2).attr("opacity", 1);
+
+        counter += 1;
+        return;
+    }
+
+    counter += 1;
+
+    // Shift domain
+    x.domain(d3.extent(country.map(d => d.values.slice(0,counter+5)).flat(), v => v.date));
+    y.domain([0, d3.max(country.map(d => d.values.slice(0,counter+5)).flat(), v => v.new_deaths_smoothed_per_million)]);
+
+
+    for (i = 0; i < country.length; i++) {
+      currentData = svg.selectAll('.line').data()[i];
+      newData = country[i].values[counter-1];
+
+      currentData.push(newData);
+
+
+      let tempSVG = svg.select('path#' + country[i].key).data([currentData]);
+
+      let tempSVGEnter = tempSVG.enter()
+                          .append('path')
+                          .attr('id', country[i].key)
+                          .attr('class', 'line')
+                          .attr('stroke', colorArray[i])
+                          .merge(tempSVG)
+                          .transition()
+                          .duration(duration)
+                          .ease(d3.easeLinear, 2)
+                          .attr('d', valueline(currentData))
+                          .attr('transform', null);
+
+
+    }
+
+    axisCall.transition().duration(duration)
+    .ease(d3.easeLinear, 2)
+    .call(xAxis);
+    axisCallY.transition().duration(duration)
+    .ease(d3.easeLinear, 2)
+    .call(yAxis);
+
+
+    if(counter > 35) {
+      svg.selectAll('#lockdown_text').transition().duration(duration)
+        .ease(d3.easeLinear, 2)
+        .attr("x", x(country[0].values[35]['date']))
+        .attr("y", y(1.5*country[0].values[35]['new_deaths_smoothed_per_million']));
+      svg.selectAll('#lockdown_date').transition().duration(duration)
+        .ease(d3.easeLinear, 2)
+        .attr("x1", x(country[0].values[35]['date']))
+        .attr("x2", x(country[0].values[35]['date']));
+      // svg.selectAll('#lockdown_rect').transition().duration(duration)
+      //   .ease(d3.easeLinear, 2)
+      //   .attr("x", x(country[0].values[34]['date']));
+    }
+
+
+  }
+
+  function sleep(milliseconds) {
+	  const date = Date.now();
+	  let currentDate = null;
+	  do {
+	    currentDate = Date.now();
+	  } while (currentDate - date < milliseconds);
+	}
+
+  function tempAlert(msg,duration) {
+     var el = document.createElement("div");
+     el.setAttribute("style","position:absolute;top:30%;left:10%;background-color:transparent;");
+     el.innerHTML = msg;
+     setTimeout(function(){
+      el.parentNode.removeChild(el);
+     },duration);
+     document.body.appendChild(el);
+  }
+
+  setInterval(function(){
+     //console.log('hello');
+    updateChart();
+  }, duration);
+})
+</script>
