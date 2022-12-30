@@ -57,14 +57,16 @@
 
   const axisCall = svg.append('g')
                     .style('font-family', 'Helvetica')
+                    .style('font-size', '16px')
                     .attr('transform', `translate(0, ${HEIGHT})`);
 
   const yAxis = 	d3.axisLeft(y);
 
   const axisCallY = svg.append('g')
-                      .style('font-family', 'Helvetica');
+                      .style('font-family', 'Helvetica')
+                      .style('font-size', '16px');
 
-  xAxis.ticks(5, '%d %b %Y');
+  xAxis.ticks(4, '%d %b %Y');
 
   d3.csv("subcontinent-covid-data.csv",
 
@@ -143,10 +145,10 @@
   }
 
   svg.append("text")
-      .attr("x", -0.05*WIDTH)
+      .attr("x", -0.0*WIDTH)
       .attr("y", 0 - (margin.top / 2))
       .attr("text-anchor", "left")
-      .style("font-size", "20px")
+      .style("font-size", "28px")
       .style("font-family", "Arial")
       .style("fill", "dimgrey")
       .text("Daily new confirmed COVID-19 deaths per million people");
@@ -248,6 +250,8 @@
         .attr("opacity", 1)
         .text('Strict lockdown in Bangladesh')
         .transition().duration(duration)
+
+       xAxis.ticks(d3.timeWeek, 2).tickFormat(d3.timeFormat('%d %b %Y'));
     }
     if(counter == 47) {
       sleep(4000);
