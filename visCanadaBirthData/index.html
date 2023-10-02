@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-lite@5"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm//vega-embed@6"></script>
+</head>
+<body>
+  <div style="display: flex; align-items: center; justify-content: center; text-align: center; min-height: 100vh;">
+    <div id="vis"></div>
+    <!-- <div id="link" style = "position:absolute; margin-top:40vh;">
+      <a href='combined_data.html'style="font-size: 16px; color: white;">Combined births and deaths chart</a>
+    </div> -->
+  </div>
+
+  <script type="text/javascript">
+    let jsonSpec1 = 'Canada_birth_data.json'
+    vegaEmbed("#vis", jsonSpec1);
+  </script>
+
+</body>
+</html>
